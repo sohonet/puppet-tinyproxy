@@ -7,27 +7,24 @@
 # [*namevar*]
 #   Required. Description of reverse proxy path mapping
 #
-# [*ensure*]
-#   Optional. Ensure parameter
-#
 # [*path*]
 #   Required. Path to proxy
 #
 # [*target*]
-#   Required. URL to proxy to
+#   Required. Target URL of proxy
 #
-# === Sample usage
+# [*ensure*]
+#   Optional. Ensure parameter
 #
-# tinyproxy::noupstream { 'no_proxy_my_other_site_com':
-#   ensure  => present,
-#   match   => 'my.other.site.com',
-# }
-#
-define tinyproxy::reversepath ( $ensure = present, $path, $target ) {
+define tinyproxy::reversepath (
+  $path,
+  $target,
+  $ensure = 'present'
+) {
   include tinyproxy::params
   concat::fragment { "tinyproxy_reversepath_${name}":
-    target  => $tinyproxy::params::configfile,
     ensure  => $ensure,
+    target  => $tinyproxy::params::configfile,
     content => "ReversePath \"${path}\" \"${target}\"\n",
     order   => 50
   }

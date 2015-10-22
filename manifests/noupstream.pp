@@ -7,11 +7,11 @@
 # [*namevar*]
 #   Required. Description of no upstream proxy mapping
 #
-# [*ensure*]
-#   Optional. Ensure parameter
-#
 # [*match*]
 #   Required. Matching host or domain to not proxy
+#
+# [*ensure*]
+#   Optional. Ensure parameter
 #
 # === Sample usage
 #
@@ -20,12 +20,15 @@
 #   match   => 'my.other.site.com',
 # }
 #
-define tinyproxy::noupstream ( $ensure = present, $match ) {
+define tinyproxy::noupstream (
+  $match,
+  $ensure = 'present',
+) {
   include tinyproxy::params
   concat::fragment { "tinyproxy_noupstream_${name}":
-    target  => $tinyproxy::params::configfile,
     ensure  => $ensure,
+    target  => $tinyproxy::params::configfile,
     content => "no upstream \"${match}\"\n",
-    order   => 40
+    order   => 40,
   }
 }

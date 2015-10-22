@@ -7,11 +7,11 @@
 # [*namevar*]
 #   Required. Name of header
 #
-# [*ensure*]
-#   Optional. Ensure parameter
-#
 # [*value*]
 #   Required. Value of header
+#
+# [*ensure*]
+#   Optional. Ensure parameter
 #
 # === Sample usage
 #
@@ -20,12 +20,15 @@
 #   value   => 'MyValue',
 # }
 #
-define tinyproxy::header ( $ensure = present, $value ) {
+define tinyproxy::header (
+  $value,
+  $ensure = 'present',
+) {
   include tinyproxy::params
   concat::fragment { "tinyproxy_header_${name}":
-    target  => $tinyproxy::params::configfile,
     ensure  => $ensure,
+    target  => $tinyproxy::params::configfile,
     content => "AddHeader \"${name}\" \"${value}\"\n",
-    order   => 20
+    order   => 20,
   }
 }

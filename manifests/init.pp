@@ -47,6 +47,12 @@
 # [*defaulterrorfile*]
 #   Optional. Path to default error file
 #
+# [*debugerrorfile*]
+#   Optional. Path to default error file
+#
+# [*debugmode*]
+#   Optional. Boolean. Use debugerrorfile instead of defaulterrorfile for debugging.
+#
 # [*stathost*]
 #   Optional. Host name or ip address of stat host
 #
@@ -59,7 +65,7 @@
 # [*syslog*]
 #   Optional. Boolean if to use syslog
 #
-# [*loglevel*]
+# [*log_level*]
 #   Optional. One of Critical, Error, Warning, Notice, Connect, Info
 #
 # [*pidfile*]
@@ -80,6 +86,10 @@
 # [*maxrequestsperchild*]
 #   Optional. Number of connections to handle until the thread is killed
 #
+# [*xtinyproxy*]
+#   Optional. Tell Tinyproxy to include the X-Tinyproxy header, which
+#   contains the client's IP address.
+#
 # [*viaproxyname*]
 #   Optional. Host name to set in the Via header
 #
@@ -88,6 +98,10 @@
 #
 # [*filter*]
 #   Optional. Path to filter file
+#
+# [*filtercontent*]
+#   Optional. Array. Populate the filter file 
+#   with the contents of this array, one entry per line.
 #
 # [*filterurls*]
 #   Optional. Boolean to filter on URL rather than domain
@@ -116,7 +130,6 @@
 # [*config_source*]
 #   Optional. Path to puppet source file to use as tinyproxy configuration
 #
-# Requires: see Modulefile
 #
 # === Sample Usage
 #
@@ -125,69 +138,81 @@
 #   port    => 8080,
 # }
 #
-class tinyproxy ( $ensure = present,
-                  $package = $tinyproxy::params::package,
-                  $autoupgrade = $tinyproxy::params::autoupgrade,
-                  $service = $tinyproxy::params::service,
-                  $user = $tinyproxy::params::user,
-                  $group = $tinyproxy::params::group,
-                  $port = $tinyproxy::params::port,
-                  $listen = $tinyproxy::params::listen,
-                  $bind = $tinyproxy::params::bind,
-                  $bindsame = $tinyproxy::params::bindsame,
-                  $connection_timeout = $tinyproxy::params::connection_timeout,
-                  $allow = $tinyproxy::params::allow,
-                  $errorfiles = $tinyproxy::params::errorfiles,
-                  $defaulterrorfile = $tinyproxy::params::defaulterrorfile,
-                  $stathost = $tinyproxy::params::stathost,
-                  $statfile = $tinyproxy::params::statfile,
-                  $logfile = $tinyproxy::params::logfile,
-                  $syslog = $tinyproxy::params::syslog,
-                  $log_level = $tinyproxy::params::log_level,
-                  $pidfile = $tinyproxy::params::pidfile,
-                  $maxclients = $tinyproxy::params::maxclients,
-                  $minspareservers = $tinyproxy::params::minspareservers,
-                  $maxspareservers = $tinyproxy::params::maxspareservers,
-                  $startservers = $tinyproxy::params::startservers,
-                  $maxrequestsperchild = $tinyproxy::params::maxrequestsperchild,
-                  $viaproxyname = $tinyproxy::params::viaproxyname,
-                  $disableviaheader = $tinyproxy::params::disableviaheader,
-                  $filter = $tinyproxy::params::filter,
-                  $filterurls = $tinyproxy::params::filterurls,
-                  $filterextended = $tinyproxy::params::filterextended,
-                  $filtercasesensitive = $tinyproxy::params::filtercasesensitive,
-                  $filterdefaultdeny = $tinyproxy::params::filterdefaultdeny,
-                  $anonymous = $tinyproxy::params::anonymous,
-                  $connectport = $tinyproxy::params::connectport,
-                  $reverseonly = $tinyproxy::params::reverseonly,
-                  $reversemagic = $tinyproxy::params::reversemagic,
-                  $config_source = undef ) inherits tinyproxy::params {
+class tinyproxy (
+  $ensure              = 'present',
+  $package             = $tinyproxy::params::package,
+  $autoupgrade         = $tinyproxy::params::autoupgrade,
+  $service             = $tinyproxy::params::service,
+  $user                = $tinyproxy::params::user,
+  $group               = $tinyproxy::params::group,
+  $port                = $tinyproxy::params::port,
+  $listen              = $tinyproxy::params::listen,
+  $bind                = $tinyproxy::params::bind,
+  $bindsame            = $tinyproxy::params::bindsame,
+  $connection_timeout  = $tinyproxy::params::connection_timeout,
+  $allow               = $tinyproxy::params::allow,
+  $errorfiles          = $tinyproxy::params::errorfiles,
+  $defaulterrorfile    = $tinyproxy::params::defaulterrorfile,
+  $debugerrorfile      = $tinyproxy::params::debugerrorfile,
+  $debugmode           = $tinyproxy::params::debugmode,
+  $stathost            = $tinyproxy::params::stathost,
+  $statfile            = $tinyproxy::params::statfile,
+  $logfile             = $tinyproxy::params::logfile,
+  $syslog              = $tinyproxy::params::syslog,
+  $log_level           = $tinyproxy::params::log_level,
+  $pidfile             = $tinyproxy::params::pidfile,
+  $maxclients          = $tinyproxy::params::maxclients,
+  $minspareservers     = $tinyproxy::params::minspareservers,
+  $maxspareservers     = $tinyproxy::params::maxspareservers,
+  $startservers        = $tinyproxy::params::startservers,
+  $maxrequestsperchild = $tinyproxy::params::maxrequestsperchild,
+  $xtinyproxy          = $tinyproxy::params::xtinyproxy,
+  $viaproxyname        = $tinyproxy::params::viaproxyname,
+  $disableviaheader    = $tinyproxy::params::disableviaheader,
+  $filter              = $tinyproxy::params::filter,
+  $filtercontent       = $tinyproxy::params::filtercontent,
+  $filterurls          = $tinyproxy::params::filterurls,
+  $filterextended      = $tinyproxy::params::filterextended,
+  $filtercasesensitive = $tinyproxy::params::filtercasesensitive,
+  $filterdefaultdeny   = $tinyproxy::params::filterdefaultdeny,
+  $anonymous           = $tinyproxy::params::anonymous,
+  $connectport         = $tinyproxy::params::connectport,
+  $reverseonly         = $tinyproxy::params::reverseonly,
+  $reversemagic        = $tinyproxy::params::reversemagic,
+  $config_source       = undef,
+) inherits tinyproxy::params {
+
+  if $debugmode {
+    $defaulterrorfile_real = $debugerrorfile
+  } else {
+    $defaulterrorfile_real = $defaulterrorfile
+  }
 
   $template = $config_source ? {
     undef   => template('tinyproxy/tinyproxy.conf.erb'),
     default => undef
   }
   $ensure_file = $ensure ? {
-    present => file,
-    default => $ensure
+    present => 'file',
+    default => $ensure,
   }
   case $ensure {
-    present: {
+    'present': {
       $version = $autoupgrade ? {
-        /^[0-9]/  => $autoupgrade,
-        true      => latest,
-        default   => present
+        /^[0-9]/ => $autoupgrade,
+        true     => 'latest',
+        default  => 'present'
       }
       service { $service:
-        ensure      => running,
-        enable      => true,
-        hasstatus   => $tinyproxy::params::hasstatus,
-        hasrestart  => $tinyproxy::params::hasrestart,
-        require     => Package[$package],
-        subscribe   => Concat[$tinyproxy::params::configfile]
+        ensure     => 'running',
+        enable     => true,
+        hasstatus  => $tinyproxy::params::hasstatus,
+        hasrestart => $tinyproxy::params::hasrestart,
+        require    => Package[$package],
+        subscribe  => Concat[$tinyproxy::params::configfile],
       }
     }
-    absent: {
+    'absent': {
       $version = $ensure
     }
     default: {
@@ -196,12 +221,12 @@ class tinyproxy ( $ensure = present,
   }
 
   package { $package:
-    ensure => $version
+    ensure => $version,
   }
 
   concat { $tinyproxy::params::configfile:
-    owner   => root,
-    group   => root,
+    owner   => 'root',
+    group   => 'root',
     mode    => '0644',
     require => Package[$package],
   }
@@ -210,6 +235,17 @@ class tinyproxy ( $ensure = present,
     content => $template,
     source  => $config_source,
     order   => 10,
+  }
+
+  if $filter and is_array($filtercontent) {
+    file { $filter:
+      ensure  => 'present',
+      content => join($filtercontent, "\n"),
+      owner   => 'root',
+      group   => $group,
+      mode    => '0640',
+      notify  => Service[$service],
+    }
   }
 
 }

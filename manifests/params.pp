@@ -18,7 +18,9 @@ class tinyproxy::params {
   $connection_timeout = 600
   $allow = []
   $errorfiles = {}
-  $defaulterrorfile= '/usr/share/tinyproxy/default.html'
+  $defaulterrorfile = '/usr/share/tinyproxy/default.html'
+  $debugerrorfile = '/usr/share/tinyproxy/debug.html'
+  $debugmode = false
   $stathost = undef
   $statfile = '/usr/share/tinyproxy/stats.html'
   $logfile = '/var/log/tinyproxy/tinyproxy.log'
@@ -34,6 +36,7 @@ class tinyproxy::params {
   $viaproxyname = 'tinyproxy'
   $disableviaheader = undef
   $filter = undef
+  $filtercontent = undef
   $filterurls = undef
   $filterextended = undef
   $filtercasesensitive = undef

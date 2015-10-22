@@ -7,24 +7,28 @@
 # [*namevar*]
 #   Required. Description of upstream proxy mapping
 #
-# [*ensure*]
-#   Optional. Ensure parameter
-#
 # [*proxy*]
 #   Required. Server to proxy to
 #
 # [*match*]
 #   Optional. Matching host or domain to proxy
 #
+# [*ensure*]
+#   Optional. Ensure parameter
+#
 # === Sample usage
 #
 # tinyproxy::upstream { 'proxy_my_site_com':
-#   ensure  => present,
-#   proxy   => 'myserver:8080',
-#   match   => 'my.site.com',
+#   ensure => 'present',
+#   proxy  => 'myserver:8080',
+#   match  => 'my.site.com',
 # }
 #
-define tinyproxy::upstream ( $ensure = present, $proxy, $match = undef ) {
+define tinyproxy::upstream (
+  $proxy,
+  $match = undef,
+  $ensure = present
+) {
   include tinyproxy::params
   $content = $match ? {
     undef   => "upstream ${proxy}\n",
@@ -32,8 +36,8 @@ define tinyproxy::upstream ( $ensure = present, $proxy, $match = undef ) {
     default => "upstream ${proxy} \"${match}\"\n"
   }
   concat::fragment { "tinyproxy_upstream_${name}":
-    target  => $tinyproxy::params::configfile,
     ensure  => $ensure,
+    target  => $tinyproxy::params::configfile,
     content => $content,
     order   => 30
   }
