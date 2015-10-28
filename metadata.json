@@ -1,6 +1,6 @@
 {
   "name": "earsdown-tinyproxy",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "author": "earsdown",
   "summary": "Puppet module to manage tinyproxy",
   "license": "Apache-2.0",
