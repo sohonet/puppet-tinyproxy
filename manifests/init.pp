@@ -244,7 +244,7 @@ class tinyproxy (
       owner   => 'root',
       group   => $group,
       mode    => '0640',
-      require => Concat[$tinyproxy::params::configfile],
+      require => [Concat[$tinyproxy::params::configfile],Package[$package]],
       notify  => Service[$service],
     }
   }
