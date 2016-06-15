@@ -99,8 +99,7 @@ StatFile "<%= @statfile %>"
 # option must not be enabled if the Logfile directive is being used.
 # These two directives are mutually exclusive.
 #
-<%- if @syslog != :undef && ![TrueClass,FalseClass].index(@syslog.class).nil?
-if @syslog == true -%>
+<%- if @syslog == true -%>
 Syslog On
 <%- elsif @syslog == false -%>
 Syslog Off
@@ -112,8 +111,7 @@ Syslog Off
 # exclusive.
 #
 Logfile "<%= @logfile %>"
-<%- end
-end -%>
+<%- end -%>
 
 #
 # LogLevel: 

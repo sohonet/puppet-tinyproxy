@@ -63,7 +63,7 @@
 #   Optional. Path to log file
 #
 # [*syslog*]
-#   Optional. Boolean if to use syslog
+#   Optional. Boolean if to use syslog. Default to false.
 #
 # [*log_level*]
 #   Optional. One of Critical, Error, Warning, Notice, Connect, Info

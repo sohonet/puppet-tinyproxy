@@ -24,7 +24,7 @@ class tinyproxy::params {
   $stathost = undef
   $statfile = '/usr/share/tinyproxy/stats.html'
   $logfile = '/var/log/tinyproxy/tinyproxy.log'
-  $syslog = undef
+  $syslog = false
   $log_level = 'Info'
   $pidfile = '/var/run/tinyproxy/tinyproxy.pid'
   $xtinyproxy = undef
