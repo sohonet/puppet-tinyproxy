@@ -130,6 +130,14 @@
 # [*config_source*]
 #   Optional. Path to puppet source file to use as tinyproxy configuration
 #
+# [*upstreams*]
+#   Optional. Hash to create resources tinyproxy::upstream
+#
+# [*noupstreams*]
+#   Optional. Hash to create resources tinyproxy::noupstream
+#
+# [*reversepaths*]
+#   Optional. Hash to create resources tinyproxy::reversepath
 #
 # === Sample Usage
 #
@@ -180,6 +188,9 @@ class tinyproxy (
   $reverseonly         = $tinyproxy::params::reverseonly,
   $reversemagic        = $tinyproxy::params::reversemagic,
   $config_source       = undef,
+  $upstreams           = {},
+  $noupstreams         = {},
+  $reversepaths        = {},
 ) inherits tinyproxy::params {
 
   if $debugmode {
@@ -249,4 +260,7 @@ class tinyproxy (
     }
   }
 
+  create_resources('tinyproxy::upstream', $upstreams)
+  create_resources('tinyproxy::noupstream', $noupstreams)
+  create_resources('tinyproxy::reversepath', $reversepaths)
 }
