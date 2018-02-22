@@ -38,23 +38,19 @@ class { 'tinyproxy':
 In addition you can add ACLs, headers and upstream proxies via separate resource definitions:
 ```puppet
 tinyproxy::header { 'X-My-Header':
-  ensure => 'present',
   value  => 'Powered by Tinyproxy'
 }
 
 tinyproxy::upstream { 'my_upstream':
-  ensure => 'present',
   proxy  => 'myproxy:8080',
   match  => '.domain.com'
 }
 
 tinyproxy::noupstream { 'my_noupstream':
-  ensure => 'present',
   match  => '.internal.domain.com'
 }
 
 tinyproxy::reversepath { 'my_reversepath':
-  ensure => 'present',
   path   => '/mypath/',
   target => 'http://www.some.server.com'
 }
